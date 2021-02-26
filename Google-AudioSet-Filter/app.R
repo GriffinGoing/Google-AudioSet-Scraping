@@ -1,5 +1,4 @@
 library(shiny)
-library(shinyChakraSlider)
 library(tidyverse)
 library(DT)
 library(shinyjs)
@@ -112,6 +111,7 @@ server <- function(input, output, session) {
     print(paste("Looking for", include))
     
     for (row in 1:numRows) {
+      tryCatch({
       from_data <- tolower(str_trim(unlist(str_split(x[row, 'decoded_labels'], ","))))
       
       matches <- (from_data %in% include)
@@ -131,15 +131,24 @@ server <- function(input, output, session) {
         row/numRows,
         detail = paste("Row ", row, " of ", numRows)
       )
+    },
+    warning = function(w) {
+      print(paste("Warning in:", row, w))
+    },
+    error = function(e) {
+      print(paste("Error in:", row, e))
+    })
     }
     
     if (mode == 'include') {
+      print("Filtering with inclusion...")
       x <- x %>%
         filter(include == TRUE) %>%
         select(!include)
     }
     
     else {
+      print("Filtering with exclusion")
       x <- x %>%
         filter(include == FALSE) %>%
         select(!include)
