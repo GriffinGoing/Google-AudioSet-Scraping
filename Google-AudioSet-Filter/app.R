@@ -112,18 +112,22 @@ server <- function(input, output, session) {
     
     for (row in 1:numRows) {
       tryCatch({
+        
+      included <- FALSE  
+      
       from_data <- tolower(str_trim(unlist(str_split(x[row, 'decoded_labels'], ","))))
       
       matches <- (from_data %in% include)
       
       for (i in 1:length(matches)) {
         if (isTRUE(matches[i])) {
+          included <- TRUE
           x[row, 'include'] <- TRUE
           break
         }
       }
       
-      if (is.null(x[row, 'include']) || is.na(x[row, 'include'])) {
+      if (included == FALSE) {
         x[row, 'include'] <- FALSE
       }
       
