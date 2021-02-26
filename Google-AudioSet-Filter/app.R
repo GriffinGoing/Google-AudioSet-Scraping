@@ -108,6 +108,8 @@ server <- function(input, output, session) {
     
     numRows <- nrow(x)
     
+    include <- tolower(include)
+    
     print(paste("Looking for", include))
     
     for (row in 1:numRows) {
@@ -116,9 +118,9 @@ server <- function(input, output, session) {
       included <- FALSE  
       
       from_data <- tolower(str_trim(unlist(str_split(x[row, 'decoded_labels'], ","))))
-      
+
       matches <- (from_data %in% include)
-      
+
       for (i in 1:length(matches)) {
         if (isTRUE(matches[i])) {
           included <- TRUE
@@ -157,7 +159,8 @@ server <- function(input, output, session) {
         filter(include == FALSE) %>%
         select(!include)
     }
-    
+    print("Built the following with parameters:")
+    str(x)
     x
   }
   
@@ -213,6 +216,9 @@ server <- function(input, output, session) {
     # if the user gave labels to include, parse others out
     if (str_trim(input$includeLabels) != "") {
       include <- tolower(str_trim(unlist(str_split(input$includeLabels, ","))))
+      print(include)
+      include <- lapply(include, tolower)
+      print(include)
       #print(paste("Including labels", include))
       
       # update filename
@@ -232,7 +238,7 @@ server <- function(input, output, session) {
     # desired sounds is included
     if (str_trim(input$excludeLabels) != "") {
       #print("Excluding")
-      exclude <- str_trim(unlist(str_split(input$excludeLabels, ",")))
+      exclude <- tolower(str_trim(unlist(str_split(input$excludeLabels, ","))))
       
       # update filename
       last_processed_filename <<- paste(last_processed_filename, "_excl=", paste(exclude, collapse = ","), sep = "")
@@ -307,7 +313,7 @@ server <- function(input, output, session) {
       paste(last_processed_filename)
     },
     content = function(file) {
-      write.csv(download_csv, file, row.names = FALSE, quote = FALSE)
+      write.csv(download_csv, file, row.names = FALSE, quote = TRUE)
     },
     contentType = "text/csv"
   )
