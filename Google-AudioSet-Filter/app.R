@@ -4,10 +4,9 @@ library(tidyverse)
 library(DT)
 library(shinyjs)
 
-
 ui <- fluidPage(
   
-  useShinyjs(),
+  #useShinyjs(),
   
   title = "Creating Scrapable Datasets from Google Audioset",
   
